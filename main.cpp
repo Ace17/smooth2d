@@ -1,4 +1,8 @@
+#include <chrono>
+#include <cstdio>
 #include "SDL.h"
+
+using namespace std;
 
 SDL_Renderer* renderer;
 
@@ -9,7 +13,7 @@ struct World
   int pos = 0;
   int vel = 0;
 
-  void update()
+  void tick()
   {
     if(pos > 1900)
       vel = -SPEED;
@@ -26,13 +30,15 @@ void drawScreen(int deltaTime)
   SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   SDL_RenderFillRect(renderer, nullptr);
 
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  SDL_Rect rect {};
-  rect.x = 10 + world.pos;
-  rect.y = 10;
-  rect.w = 100;
-  rect.h = 1000;
-  SDL_RenderFillRect(renderer, &rect);
+  {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_Rect rect {};
+    rect.x = 10 + world.pos;
+    rect.y = 10;
+    rect.w = 100;
+    rect.h = 1000;
+    SDL_RenderFillRect(renderer, &rect);
+  }
 
 
   {
@@ -58,16 +64,19 @@ int main()
   auto wnd = SDL_CreateWindow("Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
   renderer = SDL_CreateRenderer(wnd, -1, flags);
 
-  auto time = SDL_GetTicks();
+  auto lastTime = chrono::system_clock::now();
 
   for(int i=0;i < 200;++i)
   {
-    auto const deltaTime = SDL_GetTicks() - time;
-    time += deltaTime;
+    auto const now = chrono::system_clock::now();
+    auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
 
-    world.update();
+    world.tick();
 
-    drawScreen(deltaTime);
+    drawScreen(deltaTimeInUs/1000);
+    printf("%.2f ms\n", deltaTimeInUs/1000.0);
+
+    lastTime = now;
   }
 
   SDL_DestroyWindow(wnd);
