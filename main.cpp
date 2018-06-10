@@ -78,8 +78,9 @@ int main()
       remainder -= GAME_PERIOD_IN_US;
     }
 
+    auto const prev_x = g_x;
     drawScreen(remainder);
-    printf("%d, %d, %.2f ms\n", i, g_x, deltaTimeInUs/1000.0);
+    printf("%d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, deltaTimeInUs/1000.0);
 
     lastTime = now;
   }
