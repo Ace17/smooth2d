@@ -6,7 +6,9 @@ using namespace std;
 
 SDL_Renderer* renderer;
 
-auto const SPEED = 16;
+auto const GAME_PERIOD_IN_US = 16000; // 60 Hz
+
+auto const BAR_SPEED = 16;
 
 struct World
 {
@@ -16,9 +18,9 @@ struct World
   void tick()
   {
     if(pos > 1900)
-      vel = -SPEED;
+      vel = -BAR_SPEED;
     if(pos < 10)
-      vel = SPEED;
+      vel = BAR_SPEED;
     pos += vel;
   }
 };
@@ -65,13 +67,18 @@ int main()
   renderer = SDL_CreateRenderer(wnd, -1, flags);
 
   auto lastTime = chrono::system_clock::now();
+  int remainder = 0;
 
   for(int i=0;i < 200;++i)
   {
     auto const now = chrono::system_clock::now();
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
 
-    world.tick();
+    int updateCount = (deltaTimeInUs + remainder) / (GAME_PERIOD_IN_US);
+    remainder = (deltaTimeInUs + remainder) % (GAME_PERIOD_IN_US);
+
+    for(int k=0;k < updateCount;++k)
+      world.tick();
 
     drawScreen(deltaTimeInUs/1000);
     printf("%.2f ms\n", deltaTimeInUs/1000.0);
