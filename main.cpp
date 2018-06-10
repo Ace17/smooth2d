@@ -8,12 +8,12 @@ SDL_Renderer* renderer;
 
 auto const GAME_PERIOD_IN_US = 16000; // 60 Hz
 
-auto const BAR_SPEED = 16;
+auto const BAR_SPEED = 6.9;
 
 struct World
 {
-  int pos = 0;
-  int vel = 0;
+  double pos = 0;
+  double vel = 0;
 
   void tick()
   {
@@ -26,32 +26,25 @@ struct World
 };
 
 World world;
+int g_x = 0;
 
-void drawScreen(int deltaTime)
+void drawScreen(int remainder)
 {
   SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
   SDL_RenderFillRect(renderer, nullptr);
 
   {
+    auto extrapolatedPos = (world.pos + (world.vel * remainder) / GAME_PERIOD_IN_US);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect rect {};
-    rect.x = 10 + world.pos;
+    rect.x = 10 + extrapolatedPos;
+    g_x = rect.x;
     rect.y = 10;
     rect.w = 100;
     rect.h = 1000;
     SDL_RenderFillRect(renderer, &rect);
   }
 
-
-  {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-    SDL_Rect rect {};
-    rect.x = 10;
-    rect.y = 10;
-    rect.w = 10;
-    rect.h = 10 + deltaTime * 10;
-    SDL_RenderFillRect(renderer, &rect);
-  }
 
   SDL_RenderPresent(renderer);
 }
@@ -74,14 +67,16 @@ int main()
     auto const now = chrono::system_clock::now();
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
 
-    int updateCount = (deltaTimeInUs + remainder) / (GAME_PERIOD_IN_US);
-    remainder = (deltaTimeInUs + remainder) % (GAME_PERIOD_IN_US);
+    remainder += deltaTimeInUs;
 
-    for(int k=0;k < updateCount;++k)
+    while(remainder > GAME_PERIOD_IN_US)
+    {
       world.tick();
+      remainder -= GAME_PERIOD_IN_US;
+    }
 
-    drawScreen(deltaTimeInUs/1000);
-    printf("%.2f ms\n", deltaTimeInUs/1000.0);
+    drawScreen(remainder);
+    printf("%d, %d, %.2f ms\n", i, g_x, deltaTimeInUs/1000.0);
 
     lastTime = now;
   }
