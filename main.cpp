@@ -6,9 +6,9 @@ using namespace std;
 
 SDL_Renderer* renderer;
 
-auto const GAME_PERIOD_IN_US = 16000; // 60 Hz
+auto const GAME_PERIOD_IN_US = 100 * 1000; // 10 Hz
 
-auto const BAR_SPEED = 6.9;
+auto const BAR_SPEED = 30;
 
 struct World
 {
@@ -37,7 +37,10 @@ void drawScreen(int remainder)
     auto extrapolatedPos = (world.pos + (world.vel * remainder) / GAME_PERIOD_IN_US);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect rect {};
-    rect.x = 10 + extrapolatedPos;
+    if(1)
+      rect.x = 10 + extrapolatedPos;
+    else
+      rect.x = 10 + world.pos;
     g_x = rect.x;
     rect.y = 10;
     rect.w = 100;
