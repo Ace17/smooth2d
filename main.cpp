@@ -2,7 +2,8 @@
 // Game logic: runs at fixed tick rate (independent from display)
 ///////////////////////////////////////////////////////////////////////////////
 
-auto const GAME_PERIOD_IN_US = 100 * 1000; // 10 Hz
+auto const GAME_HERTZ = 10;
+auto const GAME_PERIOD_IN_US = (1000 * 1000) / GAME_HERTZ;
 
 auto const BAR_SPEED = 30;
 
