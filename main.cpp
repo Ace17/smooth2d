@@ -94,16 +94,13 @@ int main()
 {
   initRenderer();
 
-  auto const firstTime = timeNow();
-  auto lastTime = firstTime;
+  auto lastTime = timeNow();
   int remainder = 100 * 1000;
+  int totalDuration = 0;
 
-  for(int i=0;;++i)
+  while(totalDuration < 3 * 1000 * 1000)
   {
     auto const now = timeNow();
-
-    if(chrono::duration<double>(now - firstTime).count() > 3)
-      break;
 
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
     bool dirty = false;
@@ -119,9 +116,15 @@ int main()
 
     auto const prev_x = g_x;
     drawScreen(remainder);
-    printf("%d, %d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
+
+    {
+      static int i;
+      printf("%d, %d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
+      ++i;
+    }
 
     lastTime = now;
+    totalDuration += deltaTimeInUs;
   }
 
   destroyRenderer();
