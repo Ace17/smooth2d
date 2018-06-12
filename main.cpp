@@ -75,13 +75,19 @@ int main()
   auto wnd = SDL_CreateWindow("Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
   renderer = SDL_CreateRenderer(wnd, -1, flags);
 
-  auto lastTime = chrono::system_clock::now();
-  int remainder = 0;
+  auto const firstTime = chrono::system_clock::now();
+  auto lastTime = firstTime;
+  int remainder = 100 * 1000;
 
-  for(int i=0;i < 200;++i)
+  for(int i=0;;++i)
   {
     auto const now = chrono::system_clock::now();
+
+    if(chrono::duration<double>(now - firstTime).count() > 3)
+      break;
+
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
+    bool dirty = false;
 
     remainder += deltaTimeInUs;
 
@@ -89,11 +95,12 @@ int main()
     {
       world.tick();
       remainder -= GAME_PERIOD_IN_US;
+      dirty = true;
     }
 
     auto const prev_x = g_x;
     drawScreen(remainder);
-    printf("%d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, deltaTimeInUs/1000.0);
+    printf("%d, %d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
 
     lastTime = now;
   }
