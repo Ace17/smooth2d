@@ -77,13 +77,41 @@ void drawScreen(int remainder)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Computation of one frame
+///////////////////////////////////////////////////////////////////////////////
+
+#include <cstdio>
+
+int frameNumber = 0;
+int timeRemainder = 100 * 1000;
+
+using namespace std;
+
+void runFrame(int deltaTimeInUs)
+{
+  bool dirty = false;
+
+  timeRemainder += deltaTimeInUs;
+
+  while(timeRemainder > GAME_PERIOD_IN_US)
+  {
+    world.tick();
+    timeRemainder -= GAME_PERIOD_IN_US;
+    dirty = true;
+  }
+
+  auto const prev_x = g_x;
+  drawScreen(timeRemainder);
+
+  printf("%d, %d, %d, %d, %.2f ms\n", frameNumber, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
+  ++frameNumber;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Main loop
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <chrono>
-#include <cstdio>
-
-using namespace std;
 
 auto timeNow()
 {
@@ -95,35 +123,16 @@ int main()
   initRenderer();
 
   auto lastTime = timeNow();
-  int remainder = 100 * 1000;
   int totalDuration = 0;
 
   while(totalDuration < 3 * 1000 * 1000)
   {
     auto const now = timeNow();
-
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
-    bool dirty = false;
-
-    remainder += deltaTimeInUs;
-
-    while(remainder > GAME_PERIOD_IN_US)
-    {
-      world.tick();
-      remainder -= GAME_PERIOD_IN_US;
-      dirty = true;
-    }
-
-    auto const prev_x = g_x;
-    drawScreen(remainder);
-
-    {
-      static int i;
-      printf("%d, %d, %d, %d, %.2f ms\n", i, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
-      ++i;
-    }
-
     lastTime = now;
+
+    runFrame(deltaTimeInUs);
+
     totalDuration += deltaTimeInUs;
   }
 
