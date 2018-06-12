@@ -25,13 +25,32 @@ struct World
 World world;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Display: draw frames at a fixed rate (screen configuration)
+// Display: draw frames at a fixed rate (screen rate)
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SDL.h"
 SDL_Renderer* renderer;
+SDL_Window* wnd;
 
+// bar screen position, as last drawn (i.e potentially extrapolated)
 int g_x = 0;
+
+void initRenderer()
+{
+  SDL_InitSubSystem(SDL_INIT_VIDEO);
+
+  uint32_t flags = 0;
+  flags |= SDL_RENDERER_ACCELERATED;
+  flags |= SDL_RENDERER_PRESENTVSYNC;
+  wnd = SDL_CreateWindow("Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  renderer = SDL_CreateRenderer(wnd, -1, flags);
+}
+
+void destroyRenderer()
+{
+  SDL_DestroyWindow(wnd);
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
 
 void drawScreen(int remainder)
 {
@@ -68,13 +87,7 @@ using namespace std;
 
 int main()
 {
-  SDL_InitSubSystem(SDL_INIT_VIDEO);
-
-  uint32_t flags = 0;
-  flags |= SDL_RENDERER_ACCELERATED;
-  flags |= SDL_RENDERER_PRESENTVSYNC;
-  auto wnd = SDL_CreateWindow("Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
-  renderer = SDL_CreateRenderer(wnd, -1, flags);
+  initRenderer();
 
   auto const firstTime = chrono::system_clock::now();
   auto lastTime = firstTime;
@@ -106,8 +119,7 @@ int main()
     lastTime = now;
   }
 
-  SDL_DestroyWindow(wnd);
-  SDL_Quit();
+  destroyRenderer();
 
   return 0;
 }
