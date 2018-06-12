@@ -85,17 +85,22 @@ void drawScreen(int remainder)
 
 using namespace std;
 
+auto timeNow()
+{
+  return chrono::system_clock::now();
+}
+
 int main()
 {
   initRenderer();
 
-  auto const firstTime = chrono::system_clock::now();
+  auto const firstTime = timeNow();
   auto lastTime = firstTime;
   int remainder = 100 * 1000;
 
   for(int i=0;;++i)
   {
-    auto const now = chrono::system_clock::now();
+    auto const now = timeNow();
 
     if(chrono::duration<double>(now - firstTime).count() > 3)
       break;
