@@ -2,4 +2,4 @@
 set -euo pipefail
 
 g++ main.cpp `pkg-config sdl2 --cflags --libs` -o smooth
-./smooth
+./smooth | tee stats.csv
