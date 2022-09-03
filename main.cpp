@@ -123,17 +123,18 @@ int main()
   initRenderer();
 
   auto lastTime = timeNow();
-  int totalDuration = 0;
 
-  while(totalDuration < 3 * 1000 * 1000)
+  while(1)
   {
+    SDL_Event event;
+    if(SDL_PollEvent(&event) && event.type == SDL_QUIT)
+      break;
+
     auto const now = timeNow();
     auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
     lastTime = now;
 
     runFrame(deltaTimeInUs);
-
-    totalDuration += deltaTimeInUs;
   }
 
   destroyRenderer();
