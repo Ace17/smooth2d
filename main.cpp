@@ -18,7 +18,7 @@ struct World
     static auto const BAR_SPEED = 30;
 
     ++time;
-    vel = sin(time * 0.1) < 0 ? - BAR_SPEED : BAR_SPEED;
+    vel = sin(time * 0.1) < 0 ? -BAR_SPEED : BAR_SPEED;
     pos += vel;
   }
 };
@@ -43,7 +43,8 @@ void initRenderer()
   uint32_t flags = 0;
   flags |= SDL_RENDERER_ACCELERATED;
   flags |= SDL_RENDERER_PRESENTVSYNC;
-  wnd = SDL_CreateWindow("Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  wnd = SDL_CreateWindow(
+        "Smooth", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
   renderer = SDL_CreateRenderer(wnd, -1, flags);
 }
 
@@ -61,8 +62,8 @@ void drawScreen(int remainder)
   {
     const auto extrapolatedPos = (world.pos + (world.vel * remainder) / GAME_PERIOD_IN_US);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect rect {};
-    if(1)
+    SDL_Rect rect{};
+    if (1)
       rect.x = extrapolatedPos;
     else
       rect.x = world.pos;
@@ -72,7 +73,6 @@ void drawScreen(int remainder)
     rect.h = 1000;
     SDL_RenderFillRect(renderer, &rect);
   }
-
 
   SDL_RenderPresent(renderer);
 }
@@ -94,7 +94,7 @@ void runFrame(int deltaTimeInUs)
 
   timeRemainder += deltaTimeInUs;
 
-  while(timeRemainder > GAME_PERIOD_IN_US)
+  while (timeRemainder > GAME_PERIOD_IN_US)
   {
     world.tick();
     timeRemainder -= GAME_PERIOD_IN_US;
@@ -104,7 +104,7 @@ void runFrame(int deltaTimeInUs)
   auto const prev_x = g_x;
   drawScreen(timeRemainder);
 
-  printf("%d, %d, %d, %d, %.2f ms\n", frameNumber, g_x, g_x - prev_x, dirty, deltaTimeInUs/1000.0);
+  printf("%d, %d, %d, %d, %.2f ms\n", frameNumber, g_x, g_x - prev_x, dirty, deltaTimeInUs / 1000.0);
   ++frameNumber;
 }
 
@@ -125,10 +125,10 @@ int main()
 
   auto lastTime = timeNow();
 
-  while(1)
+  while (1)
   {
     SDL_Event event;
-    if(SDL_PollEvent(&event) && event.type == SDL_QUIT)
+    if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
       break;
 
     auto const now = timeNow();
@@ -142,4 +142,3 @@ int main()
 
   return 0;
 }
-
