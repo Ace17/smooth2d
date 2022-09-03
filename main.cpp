@@ -2,22 +2,23 @@
 // Game logic: runs at fixed tick rate (independent from display)
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <cmath>
+
 auto const GAME_HERTZ = 10;
 auto const GAME_PERIOD_IN_US = (1000 * 1000) / GAME_HERTZ;
 
-auto const BAR_SPEED = 30;
-
 struct World
 {
-  double pos = 0;
+  double pos = 600;
   double vel = 0;
+  double time = 0;
 
   void tick()
   {
-    if(pos > 1900)
-      vel = -BAR_SPEED;
-    if(pos < 10)
-      vel = BAR_SPEED;
+    static auto const BAR_SPEED = 30;
+
+    ++time;
+    vel = sin(time * 0.1) < 0 ? - BAR_SPEED : BAR_SPEED;
     pos += vel;
   }
 };
@@ -58,13 +59,13 @@ void drawScreen(int remainder)
   SDL_RenderFillRect(renderer, nullptr);
 
   {
-    auto extrapolatedPos = (world.pos + (world.vel * remainder) / GAME_PERIOD_IN_US);
+    const auto extrapolatedPos = (world.pos + (world.vel * remainder) / GAME_PERIOD_IN_US);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect rect {};
     if(1)
-      rect.x = 10 + extrapolatedPos;
+      rect.x = extrapolatedPos;
     else
-      rect.x = 10 + world.pos;
+      rect.x = world.pos;
     g_x = rect.x;
     rect.y = 10;
     rect.w = 100;
