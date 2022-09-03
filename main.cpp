@@ -15,10 +15,10 @@ struct World
 
   void tick()
   {
-    static auto const BAR_SPEED = 30;
+    static auto const BAR_SPEED = 5 * 100 / GAME_HERTZ;
 
-    ++time;
-    vel = sin(time * 0.1) < 0 ? -BAR_SPEED : BAR_SPEED;
+    time += 1.0 / GAME_HERTZ;
+    vel = sin(time * 2) < 0 ? -BAR_SPEED : BAR_SPEED;
     pos += vel;
   }
 };
