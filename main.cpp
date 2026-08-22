@@ -86,8 +86,6 @@ void drawScreen(int remainder)
 int frameNumber = 0;
 int timeRemainder = 100 * 1000;
 
-using namespace std;
-
 void runFrame(int deltaTimeInUs)
 {
   bool dirty = false;
@@ -116,7 +114,7 @@ void runFrame(int deltaTimeInUs)
 
 auto timeNow()
 {
-  return chrono::system_clock::now();
+  return std::chrono::system_clock::now();
 }
 
 int main()
@@ -132,7 +130,7 @@ int main()
       break;
 
     auto const now = timeNow();
-    auto const deltaTimeInUs = int(chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
+    auto const deltaTimeInUs = int(std::chrono::duration<double>(now - lastTime).count() * 1000 * 1000);
     lastTime = now;
 
     runFrame(deltaTimeInUs);
