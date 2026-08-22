@@ -30,6 +30,7 @@ World world;
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SDL.h"
+#include "SDL2_gfxPrimitives.h"
 SDL_Renderer* renderer;
 SDL_Window* wnd;
 
@@ -72,6 +73,17 @@ void drawScreen(int remainder)
     rect.w = 100;
     rect.h = 1000;
     SDL_RenderFillRect(renderer, &rect);
+
+    char text[256];
+
+    sprintf(text, "remainder: %.3f ms", remainder/1000.0);
+    stringColor(renderer, 10, 10, text, 0xffffffff);
+
+    sprintf(text, "display pos: %d", rect.x);
+    stringColor(renderer, 10, 20, text, 0xffffffff);
+
+    sprintf(text, "  world pos: %.2f", world.pos);
+    stringColor(renderer, 10, 30, text, 0xffffffff);
   }
 
   SDL_RenderPresent(renderer);
