@@ -41,6 +41,10 @@ void initRenderer()
 {
   SDL_InitSubSystem(SDL_INIT_VIDEO);
 
+  SDL_DisplayMode mode{};
+  SDL_GetDesktopDisplayMode(0, &mode);
+  fprintf(stderr, "Display mode: %dx%d %d Hz\n", mode.w, mode.h, mode.refresh_rate);
+
   uint32_t flags = 0;
   flags |= SDL_RENDERER_ACCELERATED;
   flags |= SDL_RENDERER_PRESENTVSYNC;
