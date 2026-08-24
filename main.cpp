@@ -104,21 +104,21 @@ int timeRemainder = 100 * 1000;
 
 void runFrame(int deltaTimeInUs)
 {
-  bool dirty = false;
-
   timeRemainder += deltaTimeInUs;
 
   while (timeRemainder > GAME_PERIOD_IN_US)
   {
     world.tick();
     timeRemainder -= GAME_PERIOD_IN_US;
-    dirty = true;
   }
 
   auto const prev_x = g_x;
   drawScreen(timeRemainder);
 
-  printf("%d, %d, %d, %d, %.2f ms\n", frameNumber, g_x, g_x - prev_x, dirty, deltaTimeInUs / 1000.0);
+  if(frameNumber == 0)
+    printf("frameNumber, x, deltaTimeMs\n");
+
+  printf("%d, %d, %.3f\n", frameNumber, g_x, deltaTimeInUs/1000.0);
   ++frameNumber;
 }
 
